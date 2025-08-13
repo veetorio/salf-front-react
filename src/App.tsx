@@ -1,6 +1,6 @@
 import { IoMdEye } from "react-icons/io"
 import InputWithIcon from "./components/InputWithIcon"
-import { LOCAL , URL } from "./config/api.config"
+import { LOCAL , URL } from "./config/api-config"
 import { MdEmail } from "react-icons/md"
 import { Button } from "./components/Button"
 import { useForm } from "react-hook-form"
@@ -50,11 +50,11 @@ function App() {
         })}>
           <div>
             <label htmlFor="" className="font-500">email</label>
-            <InputWithIcon field={register("email")} icon={<MdEmail />} placeholder="email@exemplo.com" />
+            <InputWithIcon field={register("email")} icon={<MdEmail className="c-gray"/>} placeholder="email@exemplo.com" />
           </div>
           <div>
             <label htmlFor="" className="font-500">senha</label>
-            <InputWithIcon icon={<IoMdEye />} field={register("password")} type="password" placeholder="email@exemplo.com"/>
+            <InputWithIcon icon={<IoMdEye className="c-gray"/>} field={register("password")} type="password" placeholder="senha"/>
           </div>
           <Button>Enviar</Button>
         </form>

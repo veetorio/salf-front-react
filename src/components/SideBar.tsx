@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import { storeLogin, type LoginResponse } from "../contexts/login"
-import { LOCAL } from "../config/api.config"
+import { LOCAL } from "../config/api-config"
 import { MdAssignmentTurnedIn, MdDashboard, MdEmojiEvents, MdGroups, MdHowToReg, MdLogout, MdPerson, MdSchool } from "react-icons/md";
 const rolesPanel = {
     'ADMIN': ["Dashboard", "Escolas", "Turmas", "Alunos", "Avaliações", "Realizar", "Usuarios", "Ranking de Alunos", "Ranking de Escolas"],

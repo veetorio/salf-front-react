@@ -5,7 +5,6 @@ import 'virtual:uno.css'
 import 'primereact/resources/themes/lara-light-blue/theme.css' // Tema
 import 'primereact/resources/primereact.min.css'               // Core
 import 'primeicons/primeicons.css'                             // Ícones
-
 import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Dashboard from './pages/Dashboard.tsx'
@@ -14,33 +13,49 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ToastContainer } from 'react-toastify'
 import Realizar from './pages/Realizar.tsx'
 import Usuarios from './pages/Usuarios.tsx'
-const client = new QueryClient()
+import Escolas from './pages/Escolas.tsx'
+import Turmas from './pages/Turmas.tsx'
+import Alunos from './pages/Alunos.tsx'
+import Avaliacoes from './pages/Avaliacoes.tsx'
+const clientQuery = new QueryClient()
 const browser = createBrowserRouter([
-  {
-    path: "/dashboard",
-    element: <Dashboard />
-  },
   {
     path: "/",
     element: <App />
   },
   {
-    path: "/realizar",
+    path: "/Dashboard",
+    element: <Dashboard />
+  },
+  {
+    path: "/Realizar",
     element: <Realizar />
   },
   {
-    path: "/realizar",
-    element: <Realizar />
+    path: "/Escolas",
+    element: <Escolas />
   },
   {
-    path : "usuarios",
+    path : "Usuarios",
     element : <Usuarios/>
-  }
+  },
+  {
+    path : "Turmas",
+    element : <Turmas/>
+  },
+  {
+    path : "Alunos",
+    element : <Alunos/>
+  },
+  {
+    path : "Avaliações",
+    element : <Avaliacoes/>
+  },
   
 ])
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={client}>
+    <QueryClientProvider client={clientQuery}>
       <ReactQueryDevtools initialIsOpen={false} />
       <ToastContainer />
       <RouterProvider router={browser} />

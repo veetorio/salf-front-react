@@ -1,3 +1,4 @@
+import { InputText } from "primereact/inputtext";
 import type { ReactNode } from "react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
@@ -15,7 +16,7 @@ export const InputWithIcon = ({
 }: InputWithIconProps) => (
     <div className="flex mt-2 items-center bg-blue-50 border rounded-md px-3 w-fit ">
         {icon}
-        <input className="p-4 bg-transparent border-none focus:ring-0 ml-2 outline-none" {...props} {...props.field} />
+        <InputText className="p-4 bg-transparent border-none focus:ring-0 ml-2 outline-none" {...props} {...props.field} />
     </div>
 );
 
