@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+// import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import 'virtual:uno.css'
@@ -54,11 +54,9 @@ const browser = createBrowserRouter([
   
 ])
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <QueryClientProvider client={clientQuery}>
       <ReactQueryDevtools initialIsOpen={false} />
       <ToastContainer />
       <RouterProvider router={browser} />
     </QueryClientProvider>
-  </StrictMode >
 )
