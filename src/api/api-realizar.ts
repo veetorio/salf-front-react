@@ -150,7 +150,7 @@ export const postRealizarAvaliacao = async (body: {
         }
     )
 
-    return data.assessmentId
+    return data
 }
 export const getRealizarAvaliacao = async (id : number) => {
     const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse).token;
