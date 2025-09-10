@@ -8,21 +8,33 @@ import { StepperPanel } from "primereact/stepperpanel";
 import { escolas } from "../api/api-escolas";
 import { Timer } from "../components/Timer";
 import { useEffect, useRef, useState } from "react";
-import { MdArrowLeft, MdArrowRight, MdCheck } from "react-icons/md";
+import { MdArrowRight, MdCheck } from "react-icons/md";
 import { getTurmasBySchoolId } from "../api/api-turmas";
 import { getAlunosBySchoolIdAndClassId } from "../api/api-alunos";
 import { getAvaliacoes } from "../api/api-avaliacoes";
 import { getEventos } from "../api/api-eventos";
 import {
   getRealizarAvaliacao,
+  PassStage,
   postRealizarAvaliacao,
+  type BodyStage,
+  type Info,
 } from "../api/api-realizar";
 import { toast } from "react-toastify";
 import { Dialog } from "primereact/dialog";
 import { ProgressBar } from "primereact/progressbar";
 import type { Student } from "./Alunos";
-import { URL } from "../config/api-config";
+import { Checkbox } from "primereact/checkbox";
+import { useNavigate } from "react-router-dom";
 
+export type NiveisLeitores =
+  | "NOT_EVALUATED"
+  | "NON_READER"
+  | "SYLLABLE_READER"
+  | "WORD_READER"
+  | "SENTENCE_READER"
+  | "TEXT_READER_WITHOUT_FLUENCY"
+  | "TEXT_READER_WITH_FLUENCY";
 interface Region {
   id: number;
   name: string;
@@ -122,7 +134,7 @@ function Realizar() {
     "pseudo-palavras": {},
     frases: {},
     texto: {},
-    questões: {},
+    "questões": {},
   });
   const calcParams = (percent: number, all: number) => Math.round((percent / 100) * all)
   // 🔹 Atualiza picked + respostas
@@ -143,20 +155,39 @@ function Realizar() {
     });
   };
 
+
+
   const mut = useMutation({
     mutationKey: ["realizar"],
-    mutationFn: () =>
-      postRealizarAvaliacao({
+    mutationFn: async () => {
+      const response = await postRealizarAvaliacao({
         studentId: states.student,
         assessmentEventId: states.events,
         assessmentId: states.assements,
-      }),
+      })
+
+      const infoResponse: Info = {
+        id: response.id,
+        studentId: response.studentId,
+        assessmentEventId: response.assessmentEventId,
+        assessmentId: response.assessmentId,
+        completed: false,
+        completedStages: [],
+        readingLevel: "NOT_EVALUATED",
+        ppm: 0,
+      };
+
+
+      setInfo(infoResponse)
+      return response
+    },
   });
 
+  const [info, setInfo] = useState<Info>()
   const mutRealizar = useMutation({
     mutationKey: ["avaliacao"],
-    mutationFn: async (id: number) => {
-      const response = await getRealizarAvaliacao(id);
+    mutationFn: async (idFn: number) => {
+      const response = await getRealizarAvaliacao(idFn);
       setSteps((e) =>
         e.map((step) => {
           switch (step.nameStep) {
@@ -171,6 +202,12 @@ function Realizar() {
                 ...step,
                 data: response.text.split(/\n(?=[\s\S]*\n)/g),
               };
+            case "questões":
+              return {
+                ...step,
+                data: response.questions.map(e => e.text),
+              };
+
             default:
               return step;
           }
@@ -200,6 +237,22 @@ function Realizar() {
   });
 
 
+  type Performance = {
+    palavras: number,
+    pseudo_palavras: number,
+    frases: number,
+    textos: number,
+    questoes: number,
+  }
+  const [performance, setPerfomance] = useState<Performance>({
+    palavras: 0,
+    pseudo_palavras: 0,
+    frases: 0,
+    textos: 0,
+    questoes: 0,
+  })
+  const [level, setlevel] = useState<NiveisLeitores>("NOT_EVALUATED")
+
   useEffect(() => {
     if (states.school) queries[1].refetch();
   }, [queries, states.school]);
@@ -221,69 +274,93 @@ function Realizar() {
   type Requisitos = "requisito 0" | "requisito 1" | "requisito 2" | "requisito 3" | "requisito 4" | "requisito 5" | "requisito 6"
   const stepsLogic = {
     "palavras": (size: number, all: number): { isPass: boolean, requisito?: Requisitos } => {
-      const paramWords = calcParams(16, all)
+      // const paramWords = calcParams(16, all) real parâmetros
+      const paramWords = calcParams(1, all)
       if (size <= paramWords) {
         if (size <= 0) {
+          updateStage(false,["words"])
           return { isPass: false, requisito: "requisito 0" }
         }
+        updateStage(false,["words"])
         return { isPass: false, requisito: "requisito 1" }
       }
+      updateStage(true,["words"])
       return { isPass: true }
     },
     "pseudo-palavras": (size: number, all: number): { isPass: boolean, requisito?: Requisitos } => {
-      const paramWords = calcParams(45, steps[0].data.length)
-      const paramPseudWords = calcParams(15, all)
+      // const paramWords = calcParams(45, steps[0].data.length)
+      const paramWords = calcParams(1, steps[0].data.length)
+      // const paramPseudWords = calcParams(15, all)
+      const paramPseudWords = calcParams(1, all)
       const phase = respostas["palavras"] <= paramWords || size <= paramPseudWords
       if (phase) {
         const paramWords = calcParams(45, steps[0].data.length)
         const paramPseudWords = calcParams(15, all)
         const phase2 = respostas["palavras"] <= paramWords && size <= paramPseudWords;
         if (phase2) {
+          updateStage(false,["words","pseudwords"])
           return { isPass: false, requisito: "requisito 1" }
         }
+        updateStage(false,["words","pseudwords"])
         return { isPass: false, requisito: "requisito 2" }
       }
+      updateStage(true,["words","pseudwords"])
       return { isPass: true }
     },
     "frases": (size: number, all: number): { isPass: boolean, requisito?: Requisitos } => {
-      const paramsPhares = calcParams(25, all)
+      // const paramsPhares = calcParams(25, all)
+      const paramsPhares = calcParams(1, all)
       const phase3 = size <= paramsPhares
-      if (phase3)
+      if (phase3){
+        updateStage(false,["words","pseudwords","phrases"])
         return { isPass: false, requisito: "requisito 3" }
+      }
+      updateStage(true,["words","pseudwords","phrases"])
       return { isPass: true }
     },
-    "texto": (size?: number, all?: number): { isPass: boolean, requisito?: Requisitos } => {
+    "texto": (_size?: number, _all?: number): { isPass: boolean, requisito?: Requisitos } => {
+      
+      updateStage(true,["words","pseudwords","phrases","text"])
       return { isPass: true }
     },
     "questões": (size: number, all: number): { isPass: boolean, requisito?: Requisitos } => {
       if (all == 0) {
-        const phase = respostas["texto"] <= steps[3].data.length;
+        // const phase = respostas["texto"] <= steps[3].data.length;
+        const phase = false;
         if (phase) {
-          const phase2 = respostas.texto <= 0;
+          // const phase2 = respostas.texto <= 0;
+          const phase2 = false;
           if (phase2) {
+            updateStage(true,["words","pseudwords","phrases","text","answers"])
             return { isPass: false, requisito: "requisito 5" }
           }
+          updateStage(true,["words","pseudwords","phrases","text","answers"])
           return { isPass: false, requisito: "requisito 6" }
         }
         return { isPass: true }
       } else {
         alert("sem quest")
-        const param = calcParams(50, steps[3].data.length)
+        // const param = calcParams(50, steps[3].data.length)
+        const param = calcParams(1, steps[3].data.length)
         const phase = size <= all || respostas["palavras"] <= param;
         if (phase) {
-          const phase2 = size <= 0;
+          // const phase2 = size <= 0;
+          const phase2 = false;
           if (phase2) {
+            updateStage(true,["words","pseudwords","phrases","text","answers"])
             return { isPass: false, requisito: "requisito 5" }
           }
+          updateStage(true,["words","pseudwords","phrases","text","answers"])
           return { isPass: false, requisito: "requisito 6" }
         }
-
+        
+        updateStage(false,["words","pseudwords","phrases","text","answers"])
         return { isPass: true }
       }
-
+      
     },
   }
-
+  
   const notifySteps = (req: Requisitos) => {
     const messages = {
       "requisito 0": "Você não leu a quantidade minimo, infelizmente classificaremos como não avaliado",
@@ -297,14 +374,19 @@ function Realizar() {
 
     toast.error(messages[req])
   }
+
   const steps_element = useRef<Stepper>(null);
   // const erroNotify = () => alert("Error")
   const handlePassSteps = (step: "palavras" | "pseudo-palavras" | "frases" | "texto" | "questões", index: number) => {
     const stepLogic = stepsLogic[step](respostas[step], steps[index].data.length)
+    const req = stepLogic.requisito ?? "requisito 0"
+    setlevel(requisitosParaNiveis[req])
     if (!stepLogic.isPass) {
-      notifySteps(stepLogic.requisito ?? "requisito 0")
+      notifySteps(req)
       encerrar()
-    } else steps_element.current?.nextCallback();
+    } else { 
+      steps_element.current?.nextCallback(); 
+    }
 
 
   }
@@ -312,30 +394,85 @@ function Realizar() {
     steps_element.current?.setActiveStep(5);
   };
 
-  const encerrar_avaliacao_api = () => {
+  const updateStage = (isCompleted : boolean,stage : ("words" | "pseudwords" | "phrases" | "text" | "answers")[]) => {
+    let body : BodyStage = {
+      wordsTotal : steps[0].data.length,
+      pseudowordsTotal : steps[1].data.length,
+      phrasesTotal : steps[2].data.length,
+      textLinesTotal : steps[3].data.length,
+      correctAnswers : respostas["questões"] ?? 0,
+      completed : isCompleted,
+      wordsRead : respostas["palavras"],
+      pseudowordsRead : respostas["pseudo-palavras"],
+      textLinesRead : respostas["texto"],
+      phrasesRead : respostas["frases"],
+      assessmentEventId : info?.assessmentEventId ?? 1,
+      assessmentId : info?.assessmentId ?? 1,
+      completedStages : [...stage],
+      ppm : respostas["palavras"],
+      readingLevel : level,
+      studentId : info?.studentId ?? 0
+    }
+    if(info) PassStage(body,info)
+    
+  }
 
-
+  const OptionsBox = (item: { nameStep: string, data: string[] },) => {
+    switch (item.nameStep.toLocaleLowerCase()) {
+      case "texto":
+        return <section className="p-4 grid grid-cols-1 gap-2">
+          {item.data.length !== 0 ? (
+            item.data.map((e) => (
+              <OptionSelect
+                key={`${item.nameStep}-${e}`}
+                value={e}
+                step={item.nameStep}
+                active={!!picked[item.nameStep]?.[e]}
+                onToggle={() => handleToggle(item.nameStep, e)}
+              />
+            ))
+          ) : (
+            <button
+              onClick={() => steps_element.current?.nextCallback()}
+              className="px-4 py-2 text-lg rounded-md border-none 
+                                     flex items-center justify-center gap-4
+                                     hover:bg-blue-8 bg-blue-6 text-white w-fit h-fit"
+            >
+              passar<MdArrowRight />
+            </button>
+          )}
+        </section>
+      case "questões":
+        return <section className="grid cols-1 p-4">
+          {item.data.map(e => (
+            <QuestionSelect
+              key={e}
+              step={item.nameStep}
+              value={e}
+              active={!!picked[item.nameStep]?.[e]}
+              onEvent={handleToggle}
+            />
+          ))}
+        </section>
+      default:
+        return <section className="p-4 grid grid-cols-4 gap-2">
+          {item.data.map((e) => (
+            <OptionSelect
+              key={`${item.nameStep}-${e}`}
+              value={e}
+              step={item.nameStep}
+              active={!!picked[item.nameStep]?.[e]}
+              onToggle={() => handleToggle(item.nameStep, e)}
+            />
+          ))}
+        </section>
+    }
   }
 
   const [visible, setVisible] = useState(false)
-  const onOpen = () => setVisible(true)
-  type Performance = {
-    palavras : number,
-    pseudo_palavras : number,
-    frases : number,
-    textos : number,
-    questoes : number,
-    level : string
-  }
-  const [performance,setPerfomance] = useState<Performance>({
-    palavras : 0,
-    pseudo_palavras : 0,
-    frases : 0,
-    textos : 0,
-    questoes : 0,
-    level : "NOT_EVALUATED"
-  })
-  const [student,setStudent] = useState<Student>()
+
+
+  const [student, setStudent] = useState<Student>()
   const calcPercentual = (selecionadas: number, todas: number): number => todas != 0 ? Math.floor((selecionadas / todas) * 100) : 0
   const DesempenhoModal = () => {
     const PBDesempenho = (props: { value: number, label: string }) => {
@@ -354,6 +491,7 @@ function Realizar() {
       TEXT_READER_WITHOUT_FLUENCY: 'Leitor de texto sem fluência',
       TEXT_READER_WITH_FLUENCY: 'Leitor de texto com fluência'
     }
+
     return <Dialog className="w-1/2" visible={visible} onHide={() => setVisible(false)}>
       <div className="p-4  text-black">
         {/* details of student */}
@@ -363,7 +501,7 @@ function Realizar() {
             <strong>nome :</strong> {student?.name ?? "Sem nome"}
           </p>
           <p>
-            <strong>Nível do Leitor :</strong> {niveisLeitores[performance.level]}
+            <strong>Nível do Leitor :</strong> {niveisLeitores[level]}
           </p>
         </section>
         {/* performance of student */}
@@ -380,6 +518,40 @@ function Realizar() {
       </div>
     </Dialog>
   }
+  const QuestionSelect = ({
+    value,
+    active,
+    onEvent,
+    step
+  }: {
+    value: string;
+    active: boolean;
+    onEvent: (step: string, value: string) => void;
+    step: string;
+  }) => {
+    return (
+      <div className="flex flex-col gap-3 bg-gray-1 mt-4 p-2 rounded justify-end">
+        <span>{value}</span>
+        <span className="flex gap-2 items-baseline">
+          Está correta ?
+          <Checkbox
+            checked={active}
+            onChange={() => onEvent(step, value)}
+          />
+        </span>
+      </div>
+    );
+  };
+  const navigate = useNavigate()
+  const requisitosParaNiveis = {
+    "requisito 0": "NOT_EVALUATED",
+    "requisito 1": "NON_READER",
+    "requisito 2": "SYLLABLE_READER",
+    "requisito 3": "WORD_READER",
+    "requisito 4": "SENTENCE_READER",
+    "requisito 5": "TEXT_READER_WITHOUT_FLUENCY",
+    "requisito 6": "TEXT_READER_WITH_FLUENCY",
+  } as const;
 
   return (
     <>
@@ -401,9 +573,9 @@ function Realizar() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 const response = await mut.mutateAsync();
-                setStudent({...response.student})
+                setStudent({ ...response.student })
                 mutRealizar.mutate(response.assessment.id);
-                
+
               }}
             >
               <div>
@@ -499,7 +671,7 @@ function Realizar() {
                             setIsDisabled(false)
                           }} onEnd={() => {
                             setIsDisabled(true)
-                          }} max={1 / 2} />
+                          }} max={1 / 5} />
                         </div>
                       </div>
                       <p>
@@ -509,49 +681,16 @@ function Realizar() {
                         minuto.
                       </p>
                     </header>
-
-                    {item.nameStep !== "texto" ? (
-                      <section className="p-4 grid grid-cols-4 gap-2">
-                        {item.data.length !== 0 ? (
-                          item.data.map((e) => (
-                            <OptionSelect
-                              key={`${item.nameStep}-${e}`}
-                              value={e}
-                              step={item.nameStep}
-                              active={!!picked[item.nameStep]?.[e]}
-                              onToggle={() => handleToggle(item.nameStep, e)}
-                            />
-                          ))
-                        ) : (
-                          <button
-                            onClick={() => steps_element.current?.nextCallback()}
-                            className="px-4 py-2 text-lg rounded-md border-none 
-                                     flex items-center justify-center gap-4
-                                     hover:bg-blue-8 bg-blue-6 text-white w-fit h-fit"
-                          >
-                            passar<MdArrowRight />
-                          </button>
-                        )}
-                      </section>
-                    ) : (
-                      <section className="p-4 grid grid-cols-1 gap-2">
-                        {item.data.map((e) => (
-                          <OptionSelect
-                            key={`${item.nameStep}-${e}`}
-                            value={e}
-                            step={item.nameStep}
-                            active={!!picked[item.nameStep]?.[e]}
-                            onToggle={() => handleToggle(item.nameStep, e)}
-                          />
-                        ))}
-                      </section>
-                    )}
-
+                    {
+                      <OptionsBox {...item} />
+                    }
                     <footer className="flex justify-end">
                       <button
                         className={`${isDisabled ? "bg-blue" : "bg-gray"} hover:opacity-50 text-white border-none px-4 py-5 rounded-xl`}
                         onClick={() => {
-                          if (isDisabled) handlePassSteps(item.nameStep as "palavras", index)
+                          if (isDisabled) {
+                            handlePassSteps(item.nameStep as "palavras", index)
+                          }
                         }}
                       >
                         proxima etapa
@@ -575,29 +714,28 @@ function Realizar() {
                   <div className="flex gap-2">
                     <ButtonTerciary onClick={() => {
                       setVisible(true)
-                      const perf : Performance = {
-                        palavras : respostas.palavras / steps[0].data.length,
-                        frases : respostas.frases / steps[1].data.length,
-                        pseudo_palavras : respostas["pseudo-palavras"] / steps[2].data.length,
-                        textos : respostas.textos / steps[3].data.length,
-                        questoes : respostas.questoes / steps[4].data.length,
-                        level : "NOT_EVALUATED"
+                      const perf: Performance = {
+                        palavras: respostas.palavras / steps[0].data.length,
+                        frases: respostas.frases / steps[1].data.length,
+                        pseudo_palavras: respostas["pseudo-palavras"] / steps[2].data.length,
+                        textos: respostas.textos / steps[3].data.length,
+                        questoes: respostas.questoes / steps[4].data.length,
                       }
-                      setPerfomance({...perf})
+                      setPerfomance({ ...perf })
                     }}>ver resultado</ButtonTerciary>
                     <ButtonSecundary
-                      onClick={() => steps_element.current?.setActiveStep(0)}
+                      onClick={location.reload}
                     >
                       realizar nova avaliação
                     </ButtonSecundary>
-                    <Button>voltar ao dashboard</Button>
+                    <Button onClick={() => navigate("/dashboard")}>voltar ao dashboard</Button>
                   </div>
                 </main>
               </StepperPanel>
             </Stepper>
           )}
         </main>
-      </Base>
+      </Base >
     </>
   );
 }

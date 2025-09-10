@@ -2,6 +2,7 @@ import axios from "axios";
 import type { LoginResponse } from "../contexts/login";
 import { URL } from "../config/api-config";
 import { toast } from "react-toastify";
+import type { NiveisLeitores } from "../pages/Realizar";
 import type { AssessmentResponse } from "./api-avaliacoes";
 
 // Region
@@ -74,6 +75,24 @@ export interface AssessmentPhrase {
     text: string;
     assessmentId: number;
 }
+export interface BodyStage {
+    studentId: number;
+    assessmentEventId: number;
+    assessmentId: number;
+    wordsRead: number;
+    wordsTotal: number;
+    pseudowordsRead: number;
+    pseudowordsTotal: number;
+    phrasesRead: number;
+    phrasesTotal: number;
+    textLinesRead: number;
+    textLinesTotal: number;
+    readingLevel: NiveisLeitores;
+    ppm: number;
+    completed: boolean;
+    completedStages: string[];
+    correctAnswers: number;
+}
 
 // Assessment
 export interface Assessment {
@@ -124,6 +143,18 @@ export interface AssessmentResult {
     updatedAt: string;
 }
 
+export interface Info {
+    id : number
+    readingLevel: NiveisLeitores;
+    ppm: number;
+    completed: boolean;
+    completedStages: string[];
+    studentId: number;
+    assessmentEventId: number;
+    assessmentId: number;
+}
+
+
 export const postRealizarAvaliacao = async (body: {
     studentId: number,
     assessmentEventId: number,
@@ -150,9 +181,9 @@ export const postRealizarAvaliacao = async (body: {
         }
     )
 
-    return data
+    return data as AssessmentResult
 }
-export const getRealizarAvaliacao = async (id : number) => {
+export const getRealizarAvaliacao = async (id: number) => {
     const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse).token;
 
     if (!token) {
@@ -164,7 +195,22 @@ export const getRealizarAvaliacao = async (id : number) => {
         'Accept': 'application/json',
     }
     const response = axios.get(`${URL}assessments/${id}`, { headers })
-    const { data }  = await response
+    const { data } = await response
+
+    return data as AssessmentResponse 
+}
+
+export const PassStage = async (body : BodyStage,id : Info) => {
+    const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse).token;
     
-    return data as AssessmentResponse
+    if (!token) {
+        throw new Error("token expirado")
+    }
+    const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+    const response = axios.put(`${URL}reading-assessments/${id.id}`,body,{ headers })
+    await response
 }

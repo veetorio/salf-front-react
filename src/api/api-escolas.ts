@@ -1,6 +1,7 @@
 import axios from "axios";
-import {  type LoginResponse } from "../contexts/login";
+import { type LoginResponse } from "../contexts/login";
 import { URL } from "../config/api-config";
+import { toast } from "react-toastify";
 
 // type ParamsForCreateAssement = {
 //     studentId: number,
@@ -52,7 +53,7 @@ const mapCallback = (e: SchoolResponse): School => {
         totalStudents: e.totalStudents
     }
 }
-const mapData = (array : SchoolResponse[]) : School[] => array?.map(mapCallback) ?? []
+const mapData = (array: SchoolResponse[]): School[] => array?.map(mapCallback) ?? []
 
 
 export const escolas = async () => {
@@ -70,6 +71,88 @@ export const escolas = async () => {
     })
 
     return mapData(response.data.data)
+}
+export const escola = async (id : number) => {
+    const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse).token;
+
+    if (!token) {
+        throw new Error("token expirado")
+    }
+    const header = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = await axios.get(URL + "schools/" + id, {
+        headers: header
+    })
+
+    return response.data
+}
+export const postEscola = async (body: { name: string, regioId: number, groupId: number }) => {
+    const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse).token;
+
+    if (!token) {
+        throw new Error("token expirado")
+    }
+    const header = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = axios.post(URL + "schools", body, {
+        headers: header
+    })
+    toast.promise(
+        response,
+        {
+            success: "criado com sucesso",
+            pending: "criando ...",
+            "error": "não foi possivel criar"
+        }
+    )
+}
+export const putEscola = async (body: { name: string, regioId: number, groupId: number }, id : number) => {
+    const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse).token;
+
+    if (!token) {
+        throw new Error("token expirado")
+    }
+    const header = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = axios.put(URL + "schools/" + id, body, {
+        headers: header
+    })
+    toast.promise(
+        response,
+        {
+            success: "modificado com sucesso",
+            pending: "modificando ...",
+            "error": "não foi possivel modificar"
+        }
+    )
+}
+export const deleteEscola = async (id: number) => {
+    const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse).token;
+
+    if (!token) {
+        throw new Error("token expirado")
+    }
+    const header = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = axios.delete(URL + "schools/" + id, {
+        headers: header
+    })
+    toast.promise(
+        response,
+        {
+            success: "deletando com sucesso",
+            pending: "deletando ...",
+            error: "não foi possivel deletando"
+        }
+    )
 }
 
 export const Mockschools = [

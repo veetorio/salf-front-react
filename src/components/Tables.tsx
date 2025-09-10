@@ -131,11 +131,15 @@ function Table<U extends object>(props: TableProps<U>) {
             </div>
         </header>
         <DataTable
+
+            paginator
+            rows={10}
             value={props.rows ?? []}
             filters={filter}
             onFilter={(e) => setFilter(e)}
             autoSave=''
             emptyMessage="nenhum item foi encontrado"
+            paginatorClassName='justify-end'
             className='p-4'
 
         >
