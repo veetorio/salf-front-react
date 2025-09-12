@@ -19,6 +19,7 @@ export interface StudentResponse{
   registrationNumber: string;
   classGroupId: number;
   schoolId: number;
+  grade : string,
   classGroup: ClassResponse;
   school: SchoolResponse;
   createdAt: string;
@@ -140,7 +141,7 @@ export const putAlunos = async (body : StudentPost,id : number) => {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
     }
-    const response = axios.post(`${URL}students?limit=300`,body, { headers })
+    const response = axios.post(`${URL}students/${id}?limit=300`,body, { headers })
 
     toast.promise(
         response,

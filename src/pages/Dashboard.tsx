@@ -14,7 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import { FaTachometerAlt } from "react-icons/fa";
 import { MdCheck, MdGroups, MdPercent } from "react-icons/md";
 import Pizza from "../components/graficos/Pizza";
-import { getDashboardAnalytics, getPerformanceByGrade, getReadingLevelEvolution, getYearlyProgression, type DashboardAnalytics, type GradePerformance, type GradesPerformanceRoot } from "../api/api-dashboard";
+import { getDashboardAnalytics, getPerformanceByGrade, getReadingLevelEvolution, getYearlyProgression, type DashboardAnalytics, type GradePerformance } from "../api/api-dashboard";
 import MultiLineChart, { LineGraph, type Evolution } from "../components/graficos/Linear";
 import  {YearlyBarChart, type YearlyProps } from "../components/graficos/Bar";
 export interface DashboardData {
@@ -115,10 +115,10 @@ function Dashboard() {
     }
     const loadData = async () => {
         const [cardsApi, multiLineLevel, barYearly, lineGrade] = await Promise.all([
-            getDashboardAnalytics({}),
-            getReadingLevelEvolution({}),
-            getYearlyProgression({}),
-            getPerformanceByGrade({})
+            getDashboardAnalytics(),
+            getReadingLevelEvolution(),
+            getYearlyProgression(),
+            getPerformanceByGrade()
         ])
         setCards({ ...cardsApi })
         setLevelProgress(lineGrade.gradePerformance)
@@ -184,7 +184,7 @@ function Dashboard() {
                                     value={(regions ?? []).find((opt) => opt.value === field.value) || null}
                                     onChange={(inp) => {
                                         field.onChange(inp?.value ?? null);
-                                        setIds((e: any) => ({ ...e, regions: inp?.value ?? 0 }));
+                                        setIds((e) => ({ ...e, regions: inp?.value ?? 0 }));
                                     }}
                                 />
                             )}
@@ -205,7 +205,7 @@ function Dashboard() {
                                     value={(groups ?? []).find((opt) => opt.value === field.value) || null}
                                     onChange={(inp) => {
                                         field.onChange(inp?.value ?? null);
-                                        setIds((e: any) => ({ ...e, groups: inp?.value ?? 0 }));
+                                        setIds((e) => ({ ...e, groups: inp?.value ?? 0 }));
                                     }}
                                 />
                             )}
@@ -226,7 +226,7 @@ function Dashboard() {
                                     value={(schools ?? []).find((opt) => opt.value === field.value) || null}
                                     onChange={(inp) => {
                                         field.onChange(inp?.value ?? null);
-                                        setIds((e: any) => ({ ...e, escolas: inp?.value ?? 0 }));
+                                        setIds((e) => ({ ...e, escolas: inp?.value ?? 0 }));
                                     }}
                                 />
                             )}
@@ -247,7 +247,7 @@ function Dashboard() {
                                     value={(yearSchool ?? []).find((opt) => opt.value === field.value) || null}
                                     onChange={(inp) => {
                                         field.onChange(inp?.value ?? "1 ANO");
-                                        setIds((e: any) => ({ ...e, ano: inp?.value ?? "1 ANO" }));
+                                        setIds((e) => ({ ...e, ano: inp?.value ?? "1 ANO" }));
                                     }}
                                 />
                             )}
@@ -271,7 +271,7 @@ function Dashboard() {
                                     value={(events ?? []).find((opt) => opt.value === field.value) || null}
                                     onChange={(inp) => {
                                         field.onChange(inp?.value ?? null);
-                                        setIds((e: any) => ({ ...e, grupos: inp?.value ?? 0 }));
+                                        setIds((e) => ({ ...e, grupos: inp?.value ?? 0 }));
                                     }}
                                 />
                             )}

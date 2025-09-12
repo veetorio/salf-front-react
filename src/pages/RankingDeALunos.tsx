@@ -31,7 +31,7 @@ function RankingDeAlunos() {
     const queries = useQueries({
         queries: [
             {
-                queryFn: getRankingStudents,
+                queryFn: async () =>  getRankingStudents() ,
                 queryKey: ["ranking"]
             },
             {

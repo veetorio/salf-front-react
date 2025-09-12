@@ -26,7 +26,7 @@ function RankingDeEscolas() {
     const queries = useQueries({
         queries: [
             {
-                queryFn: getRankingSchools,
+                queryFn: async() => getRankingSchools(),
                 queryKey: ["ranking"]
             },
             {
@@ -39,7 +39,7 @@ function RankingDeEscolas() {
             },
             {
                 queryKey: ["ranking-regions"],
-                queryFn: getRankingRegions
+                queryFn: () => getRankingRegions()
             },
         ]
     })

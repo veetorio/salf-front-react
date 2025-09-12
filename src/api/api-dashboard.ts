@@ -3,6 +3,7 @@ import axios from "axios";
 import type { LoginResponse } from "../contexts/login";
 import { URL } from "../config/api-config";
 import type { YearlyProps } from "../components/graficos/Bar";
+import type { DashboardData } from "../pages/Dashboard";
 
 // Tipagens -----------------------
 
@@ -77,7 +78,7 @@ const getHeaders = () => {
 const fetchWithToast = async <T>(
   endpoint: string,
   messages: { success: string; error: string; pending: string },
-  params?: Record<string, any>
+  params?: DashboardData
 ): Promise<T> => {
   const response = axios.get(`${URL}dashboard/${endpoint}`, { headers: getHeaders(), params });
   const { data } = await toast.promise(response, messages);
@@ -85,35 +86,35 @@ const fetchWithToast = async <T>(
 };
 
 
-export const getDashboardAnalytics = (params?: any) =>
+export const getDashboardAnalytics = (params?: DashboardData) =>
   fetchWithToast<DashboardAnalytics>("analytics", {
     success: "Dados analíticos carregados",
     error: "Não foi possível carregar os dados analíticos",
     pending: "Carregando dados analíticos...",
   }, params);
 
-export const getReadingLevelDistribution = (params?: any) =>
+export const getReadingLevelDistribution = (params?: DashboardData) =>
   fetchWithToast<ReadingLevelDistribution>("reading-level-distribution", {
     success: "Distribuição de níveis de leitura carregada",
     error: "Não foi possível carregar a distribuição de leitura",
     pending: "Carregando distribuição de leitura...",
   }, params);
 
-export const getPerformanceByGrade = (params?: any) =>
+export const getPerformanceByGrade = (params?: DashboardData) =>
   fetchWithToast<GradesPerformanceRoot>("performance-by-grade", {
     success: "Desempenho por série carregado",
     error: "Não foi possível carregar desempenho por série",
     pending: "Carregando desempenho por série...",
   }, params);
 
-export const getReadingLevelEvolution = (params?: any) =>
+export const getReadingLevelEvolution = (params?: DashboardData) =>
   fetchWithToast<ReadingLevelEvolution>("reading-level-evolution", {
     success: "Evolução dos níveis de leitura carregada",
     error: "Não foi possível carregar evolução de leitura",
     pending: "Carregando evolução de leitura...",
   }, params);
 
-export const getYearlyProgression = (params?: any) =>
+export const getYearlyProgression = (params?: DashboardData) =>
   fetchWithToast<YearlyProps>("yearly-progression", {
     success: "Progressão anual carregada",
     error: "Não foi possível carregar progressão anual",

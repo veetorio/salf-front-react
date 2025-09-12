@@ -10,13 +10,13 @@ import { deleteEventos, getEvento, getEventos, postEventos, putEventos, type Eve
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { Chip } from "primereact/chip";
+import { Chip, type ChipRemoveEvent } from "primereact/chip";
 import { toast } from "react-toastify";
 import { InputTextarea } from "primereact/inputtextarea";
 import { MdAdd } from "react-icons/md";
 import { IoMdTrash } from "react-icons/io";
 import type AvaliacaoLeitura from "../api/api-avaliacoes";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { LayerLoad } from "./RankingDeALunos";
 
 
@@ -57,9 +57,6 @@ function Avaliacoes() {
 
 
 
-    interface Phrase {
-        text: string; // Texto da frase
-    }
 
     interface Question {
         text: string; // Enunciado da questão
@@ -126,7 +123,7 @@ function Avaliacoes() {
 
 
             const startAlphabet = "A".charCodeAt(0);
-            const internInputRef = useRef<HTMLInputElement>(null)
+            const internInputRef = useRef<HTMLInputElement | null>(null)
             const removeQuestion = () => {
                 const filterQuest = assement.questions.filter((_, i) => i != id)
                 assement.questions = filterQuest
@@ -179,12 +176,14 @@ function Avaliacoes() {
                 </div>
             );
         };
-        const inputWords = useRef<HTMLInputElement>(null)
-        const inputPseud = useRef<HTMLInputElement>(null)
-        const inputPhrases = useRef<HTMLInputElement>(null)
-        const onPush = (field: string, fieldRef: RefObject<HTMLInputElement>, max: number) => {
+        const inputWords = useRef<HTMLInputElement | null>(null)
+        const inputPseud = useRef<HTMLInputElement | null>(null)
+        const inputPhrases = useRef<HTMLInputElement | null>(null)
+        const onPush = (field: string, fieldRef?: RefObject<HTMLInputElement | null>, max?: number) => {
             console.log(assement)
-            if (fieldRef?.current?.value.length > 0 && fieldRef?.current?.value.length <= max) {
+            const conditionA =fieldRef?.current?.value.length  ?? 0
+            const conditionB = fieldRef?.current?.value.length  ?? 0
+            if ( conditionA > 0 &&  conditionB <= (max ?? 0)) {
                 const chips = ((fieldRef?.current?.value) as string).split(/[.,]/g)
                 for (const item of chips) assement[field].push(item.trim())
                 setAssement({ ...assement })
@@ -192,22 +191,30 @@ function Avaliacoes() {
                 toast.error("adicione um item nesse campo")
             }
         }
-        const onPushPhrase = (field: string, fieldRef: RefObject<HTMLInputElement>, max: number) => {
-            if (fieldRef?.current?.value.length > 0 && fieldRef?.current?.value.length <= max) {
-                const chips = ((fieldRef?.current?.value) as string).split(/[.]/).map(e => ({ text: e }))
-                for (const item of chips) assement[field].push(item)
-                setAssement({ ...assement })
-            } else {
-                toast.error("adicione um item nesse campo")
+        const onPushPhrase = (field: string, fieldRef: RefObject<HTMLInputElement | null>, max: number) => {
+            if (fieldRef) {
+                const conditionA = fieldRef?.current?.value.length ?? 0
+                const conditionB = fieldRef?.current?.value.length ?? 0
+                if (conditionA > 0 && conditionB <= max) {
+                    const chips = ((fieldRef?.current?.value) as string).split(/[.]/).map(e => ({ text: e }))
+                    for (const item of chips) assement[field].push(item)
+                    setAssement({ ...assement })
+                } else {
+                    toast.error("adicione um item nesse campo")
+                }
             }
         }
 
-        const [display, show] = useState()
 
-        const onPop = (field: string, value: string) => {
+        const onPop = (field: string, value: string): boolean => {
             assement[field] = removeItem(assement[field], value)
             setAssement({ ...assement })
+            return true
         }
+        const handleChipRemove = (field: string) => (e: ChipRemoveEvent): boolean => {
+            return onPop(field, e.value); // Assumindo que e.value contém a string
+        };
+
         return <>
             <Dialog visible={open} className="w-3/6" onHide={() => setOpen(false)}>
                 <section className="px-8 py-4">
@@ -244,7 +251,7 @@ function Avaliacoes() {
                                 <div>
                                     <div className="flex flex-col">
                                         <h3 className="mb-2">Palavras</h3>
-                                        <label htmlFor="" className="mt-2 mb-2">Adicione até 60 pseudo-palavras para a avaliação</label>
+                                        <label htmlFor="" className="mt-2 mb-2">Adicione até 60 palavras para a avaliação</label>
                                         <div className="p-inputgroup flex-1">
                                             <InputText ref={inputWords} className="p-2" placeholder="Digite palavras separadas por vírgula ou pressione Enter" />
                                             <ButtonPrime onClick={() => { onPush("words", inputWords, 200) }} icon="pi pi-plus" className="bg-blue-9" type="button" />
@@ -254,9 +261,7 @@ function Avaliacoes() {
                             </header>
                             <section className="mt-4 bg-gray-1 p-4 w-full grid cols-8 gap-x-2">
                                 {
-                                    assement.words.map(e => <Chip onRemove={(e) => {
-                                        onPop("words", e.value)
-                                    }} className="bg-green-5 w-fit b-1 b-solid b-green-6 text-white px-1/10 flex gap-2 justify-between" label={e} removable />)
+                                    assement.words.map(e => <Chip onRemove={handleChipRemove("words")} className="bg-green-5 w-fit b-1 b-solid b-green-6 text-white px-1/10 flex gap-2 justify-between" label={e} removable />)
                                 }
                             </section>
                         </div>
@@ -276,7 +281,7 @@ function Avaliacoes() {
                             </header>
                             <section className="mt-4 bg-gray-1 p-4 w-full grid cols-8 gap-x-2">
                                 {
-                                    assement.pseudowords.map(e => <Chip onRemove={(e) => { onPop("pseudowords", e.value) }} className="bg-green-5 w-fit b-1 b-solid b-green-6 text-white px-1/10 flex gap-2 justify-between" label={e} removable />)
+                                    assement.pseudowords.map(e => <Chip onRemove={handleChipRemove("pseudowords")} className="bg-green-5 w-fit b-1 b-solid b-green-6 text-white px-1/10 flex gap-2 justify-between" label={e} removable />)
                                 }
                             </section>
                         </div>
@@ -296,7 +301,7 @@ function Avaliacoes() {
                             </header>
                             <section className="mt-4 bg-gray-1 p-4 w-full grid cols-1 gap-x-2">
                                 {
-                                    assement.phrases.map(e => <Chip onRemove={(ev) => { onPop("phrases", ev.value) }} className="bg-green-5 text-sm w-fit b-1 b-solid b-green-6 text-white px-1/10 flex gap-2 justify-between" label={e.text} removable />)
+                                    assement.phrases.map(e => <Chip onRemove={handleChipRemove("phrases")} className="bg-green-5 text-sm w-fit b-1 b-solid b-green-6 text-white px-1/10 flex gap-2 justify-between" label={e.text} removable />)
                                 }
                             </section>
                         </div>
@@ -363,14 +368,14 @@ function Avaliacoes() {
                     nova avaliação
                 </Button>
             </BoxDefault>
-            {queries[1].isSuccess ? <Table rows={queries[1].data ?? []} title="" deleteCallbacks={deleteAvaliacao} editCallbacks={updateAvaliacao} isAct /> : <LayerLoad/>}
+            {queries[1].isSuccess ? <Table rows={queries[1].data ?? []} title="" deleteCallbacks={deleteAvaliacao} editCallbacks={updateAvaliacao} isAct /> : <LayerLoad />}
         </>
     }
     const Eventos = () => {
         const [open, setOpen] = useState(false)
         const [id, setId] = useState(0)
         const [event, setEvent] = useState<EventResponse>()
-        const [post,setPost] = useState(false)
+        const [post, setPost] = useState(false)
         const { register, handleSubmit, reset } = useForm<{ name: string }>({
             defaultValues: event
         })
@@ -386,7 +391,7 @@ function Avaliacoes() {
         )
         const mutPut = useMutation(
             {
-                mutationFn : async (body : { name : string }) => putEventos({...body},id)
+                mutationFn: async (body: { name: string }) => putEventos({ ...body }, id)
             }
         )
         const onEdit = async (id: number) => {
@@ -408,7 +413,7 @@ function Avaliacoes() {
                 <section className="px-8 py-4">
                     <h2>Novo evento de avaliação</h2>
                     <form action="" className="mt-3 flex flex-col gap-4" onSubmit={handleSubmit((e) => {
-                        if(post) {
+                        if (post) {
                             mutPost.mutateAsync(e)
                         } else {
                             mutPut.mutateAsync(e)
@@ -430,16 +435,16 @@ function Avaliacoes() {
         return <>
             <UpdateEvent />
             <BoxDefault title="Eventos" subtitle="Gerencie as eventos">
-                <Button onClick={() => { 
+                <Button onClick={() => {
                     setEvent(undefined)
-                    reset({ name : ""})
+                    reset({ name: "" })
                     setPost(true)
-                    setOpen(true) 
+                    setOpen(true)
                 }}>
                     novo evento
                 </Button>
             </BoxDefault>
-            {queries[0].isSuccess ? <Table rows={queries[0].data ?? []} title="" deleteCallbacks={mutDelete.mutateAsync} editCallbacks={onEdit} isAct /> : <LayerLoad/>}
+            {queries[0].isSuccess ? <Table rows={queries[0].data ?? []} title="" deleteCallbacks={mutDelete.mutateAsync} editCallbacks={onEdit} isAct /> : <LayerLoad />}
         </>
     }
     return <Base>

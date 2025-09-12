@@ -4,12 +4,12 @@ import BoxDefault from "../components/BoxDefault";
 import { Button } from "../components/Button";
 import Table, { type FiltersColumn } from "../components/Tables";
 import { defaultMode } from "../config/api-config";
-import { deleteAluno, getAluno, getAlunos, postAlunos, putAlunos } from "../api/api-alunos";
+import { deleteAluno, getAluno, getAlunos, postAlunos, putAlunos, type StudentResponse } from "../api/api-alunos";
 import { Dialog } from "primereact/dialog";
 import Select from "react-select";
 import { InputText } from "primereact/inputtext";
 import { escolas } from "../api/api-escolas";
-import { getTurmas } from "../api/api-turmas";
+import { getTurmas, type ClassResponse } from "../api/api-turmas";
 import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import { LayerLoad } from "./RankingDeALunos";
@@ -23,8 +23,15 @@ export interface Student {
     grade: string
 
 }
-export interface StudentPost {
+export interface StudentNormal {
     id: number;
+    name: string;
+    classGroup: ClassResponse;
+    school: string;
+    grade: string
+
+}
+export interface StudentPost extends Student {
     name: string;
     classGroup: string;
     school: string;
@@ -48,11 +55,18 @@ function Alunos() {
     const [post, setPost] = useState(false)
     const [id, setId] = useState(0)
     const onPutStudent = async (id: number) => {
-        const student = await getAluno(id)
+        const student : StudentResponse = await getAluno(id)
         setPost(false)
         setId(id)
         setOpen(true)
-        reset({ ...student })
+        reset({ ...{
+            id : student.id,
+            name : student.name,
+            classGroup : student.classGroup.name,
+            grade : student.grade,
+            registrationNumber : Number(student.registrationNumber),
+            school : student.school.name
+        } })
 
     }
     const PostAluno = () => {
@@ -78,9 +92,6 @@ function Alunos() {
             else putAlunos(data, id)
         }
 
-        const onDelete = (id : number) => {
-            deleteAluno(id)
-        }
 
         return <Dialog className="w-1/2" visible={open} onHide={() => { setOpen(false) }}>
             <div className="p-4">
@@ -105,7 +116,7 @@ function Alunos() {
                                 <Select
                                     options={escolasOpts}
                                     placeholder="selecione a escola"
-                                    value={escolasOpts?.find(opt => opt.value === field.value) || null}
+                                    value={escolasOpts?.find(opt => String(opt.value) === field.value) || null}
                                     onChange={(val) => field.onChange(val ? val.value : null)}
                                 />
                             )}
@@ -121,7 +132,7 @@ function Alunos() {
                                 <Select
                                     options={turmasOpts}
                                     placeholder="selecione a turma"
-                                    value={turmasOpts?.find(opt => opt.value === field.value) || null}
+                                    value={turmasOpts?.find(opt => String(opt.value) === field.value)}
                                     onChange={(val) => field.onChange(val ? val.value : null)}
                                 />
                             )}

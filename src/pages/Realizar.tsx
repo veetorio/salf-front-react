@@ -573,7 +573,13 @@ function Realizar() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 const response = await mut.mutateAsync();
-                setStudent({ ...response.student })
+                setStudent({ 
+                   name : response.student.name,
+                   classGroup : response.student.classGroup.name,
+                   grade : response.student.classGroup.grade,
+                   id : response.student.id,
+                  school : response.student.school.name,
+                 })
                 mutRealizar.mutate(response.assessment.id);
 
               }}

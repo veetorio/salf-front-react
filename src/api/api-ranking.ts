@@ -2,6 +2,7 @@ import axios from "axios";
 import type { LoginResponse } from "../contexts/login";
 import { URL } from "../config/api-config";
 import { toast } from "react-toastify";
+import type { DashboardData } from "../pages/Dashboard";
 
 const getHeaders = () => {
   const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse)?.token;
@@ -35,35 +36,35 @@ export interface SchoolData {
 const fetchWithToast = async <T>(
   endpoint: string,
   messages: { success: string; error: string; pending: string },
-  params?: Record<string, any>
+  params?: DashboardData
 ): Promise<T> => {
   const response = axios.get(`${URL}dashboard/${endpoint}`, { headers: getHeaders(), params });
   const { data } = await toast.promise(response, messages);
-  return data.data as T;
+  return await data.data as T;
 };
 const fetchWithToastNoData = async <T>(
   endpoint: string,
   messages: { success: string; error: string; pending: string },
-  params?: Record<string, any>
+  params?: DashboardData
 ): Promise<T> => {
   const response = axios.get(`${URL}dashboard/${endpoint}?limit=1000`, { headers: getHeaders(), params });
   const { data } = await toast.promise(response, messages);
-  return data as T;
+  return await data as T;
 };
 
-export const getRankingStudents = (params?: any) =>
+export const getRankingStudents = (params?: DashboardData) =>
   fetchWithToast<StudentData[]>("student-ranking", {
     success: "Dados analíticos carregados",
     error: "Não foi possível carregar os dados analíticos",
     pending: "Carregando dados analíticos...",
   }, params);
-export const getRankingSchools = (params?: any) =>
+export const getRankingSchools = (params?: DashboardData) =>
   fetchWithToast<SchoolData[]>("school-ranking", {
     success: "Dados analíticos carregados",
     error: "Não foi possível carregar os dados analíticos",
     pending: "Carregando dados analíticos...",
   }, params);
-export const getRankingRegions = (params?: any) =>
+export const getRankingRegions = (params?: DashboardData) =>
   fetchWithToastNoData<{
     percentage : number,
     region : string
