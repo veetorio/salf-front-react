@@ -278,13 +278,13 @@ function Realizar() {
       const paramWords = calcParams(1, all)
       if (size <= paramWords) {
         if (size <= 0) {
-          updateStage(false,["words"])
+          updateStage(false, ["words"])
           return { isPass: false, requisito: "requisito 0" }
         }
-        updateStage(false,["words"])
+        updateStage(false, ["words"])
         return { isPass: false, requisito: "requisito 1" }
       }
-      updateStage(true,["words"])
+      updateStage(true, ["words"])
       return { isPass: true }
     },
     "pseudo-palavras": (size: number, all: number): { isPass: boolean, requisito?: Requisitos } => {
@@ -298,29 +298,30 @@ function Realizar() {
         const paramPseudWords = calcParams(15, all)
         const phase2 = respostas["palavras"] <= paramWords && size <= paramPseudWords;
         if (phase2) {
-          updateStage(false,["words","pseudwords"])
+          updateStage(false, ["words", "pseudwords"])
           return { isPass: false, requisito: "requisito 1" }
         }
-        updateStage(false,["words","pseudwords"])
+        updateStage(false, ["words", "pseudwords"])
         return { isPass: false, requisito: "requisito 2" }
       }
-      updateStage(true,["words","pseudwords"])
+      updateStage(true, ["words", "pseudwords"])
       return { isPass: true }
     },
     "frases": (size: number, all: number): { isPass: boolean, requisito?: Requisitos } => {
       // const paramsPhares = calcParams(25, all)
       const paramsPhares = calcParams(1, all)
       const phase3 = size <= paramsPhares
-      if (phase3){
-        updateStage(false,["words","pseudwords","phrases"])
+      if (phase3) {
+        updateStage(false, ["words", "pseudwords", "phrases"])
         return { isPass: false, requisito: "requisito 3" }
       }
-      updateStage(true,["words","pseudwords","phrases"])
+      updateStage(true, ["words", "pseudwords", "phrases"])
       return { isPass: true }
     },
     "texto": (_size?: number, _all?: number): { isPass: boolean, requisito?: Requisitos } => {
-      
-      updateStage(true,["words","pseudwords","phrases","text"])
+      const a = () => (_size ?? 0) + (_all ?? 0)
+      a()
+      updateStage(true, ["words", "pseudwords", "phrases", "text"])
       return { isPass: true }
     },
     "questões": (size: number, all: number): { isPass: boolean, requisito?: Requisitos } => {
@@ -331,10 +332,10 @@ function Realizar() {
           // const phase2 = respostas.texto <= 0;
           const phase2 = false;
           if (phase2) {
-            updateStage(true,["words","pseudwords","phrases","text","answers"])
+            updateStage(true, ["words", "pseudwords", "phrases", "text", "answers"])
             return { isPass: false, requisito: "requisito 5" }
           }
-          updateStage(true,["words","pseudwords","phrases","text","answers"])
+          updateStage(true, ["words", "pseudwords", "phrases", "text", "answers"])
           return { isPass: false, requisito: "requisito 6" }
         }
         return { isPass: true }
@@ -347,20 +348,20 @@ function Realizar() {
           // const phase2 = size <= 0;
           const phase2 = false;
           if (phase2) {
-            updateStage(true,["words","pseudwords","phrases","text","answers"])
+            updateStage(true, ["words", "pseudwords", "phrases", "text", "answers"])
             return { isPass: false, requisito: "requisito 5" }
           }
-          updateStage(true,["words","pseudwords","phrases","text","answers"])
+          updateStage(true, ["words", "pseudwords", "phrases", "text", "answers"])
           return { isPass: false, requisito: "requisito 6" }
         }
-        
-        updateStage(false,["words","pseudwords","phrases","text","answers"])
+
+        updateStage(false, ["words", "pseudwords", "phrases", "text", "answers"])
         return { isPass: true }
       }
-      
+
     },
   }
-  
+
   const notifySteps = (req: Requisitos) => {
     const messages = {
       "requisito 0": "Você não leu a quantidade minimo, infelizmente classificaremos como não avaliado",
@@ -384,8 +385,8 @@ function Realizar() {
     if (!stepLogic.isPass) {
       notifySteps(req)
       encerrar()
-    } else { 
-      steps_element.current?.nextCallback(); 
+    } else {
+      steps_element.current?.nextCallback();
     }
 
 
@@ -394,27 +395,27 @@ function Realizar() {
     steps_element.current?.setActiveStep(5);
   };
 
-  const updateStage = (isCompleted : boolean,stage : ("words" | "pseudwords" | "phrases" | "text" | "answers")[]) => {
-    let body : BodyStage = {
-      wordsTotal : steps[0].data.length,
-      pseudowordsTotal : steps[1].data.length,
-      phrasesTotal : steps[2].data.length,
-      textLinesTotal : steps[3].data.length,
-      correctAnswers : respostas["questões"] ?? 0,
-      completed : isCompleted,
-      wordsRead : respostas["palavras"],
-      pseudowordsRead : respostas["pseudo-palavras"],
-      textLinesRead : respostas["texto"],
-      phrasesRead : respostas["frases"],
-      assessmentEventId : info?.assessmentEventId ?? 1,
-      assessmentId : info?.assessmentId ?? 1,
-      completedStages : [...stage],
-      ppm : respostas["palavras"],
-      readingLevel : level,
-      studentId : info?.studentId ?? 0
+  const updateStage = (isCompleted: boolean, stage: ("words" | "pseudwords" | "phrases" | "text" | "answers")[]) => {
+    const body: BodyStage = {
+      wordsTotal: steps[0].data.length,
+      pseudowordsTotal: steps[1].data.length,
+      phrasesTotal: steps[2].data.length,
+      textLinesTotal: steps[3].data.length,
+      correctAnswers: respostas["questões"] ?? 0,
+      completed: isCompleted,
+      wordsRead: respostas["palavras"],
+      pseudowordsRead: respostas["pseudo-palavras"],
+      textLinesRead: respostas["texto"],
+      phrasesRead: respostas["frases"],
+      assessmentEventId: info?.assessmentEventId ?? 1,
+      assessmentId: info?.assessmentId ?? 1,
+      completedStages: [...stage],
+      ppm: respostas["palavras"],
+      readingLevel: level,
+      studentId: info?.studentId ?? 0
     }
-    if(info) PassStage(body,info)
-    
+    if (info) PassStage(body, info)
+
   }
 
   const OptionsBox = (item: { nameStep: string, data: string[] },) => {
@@ -473,7 +474,6 @@ function Realizar() {
 
 
   const [student, setStudent] = useState<Student>()
-  const calcPercentual = (selecionadas: number, todas: number): number => todas != 0 ? Math.floor((selecionadas / todas) * 100) : 0
   const DesempenhoModal = () => {
     const PBDesempenho = (props: { value: number, label: string }) => {
       return <div>

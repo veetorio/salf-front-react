@@ -2,7 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import Base from "../BaseComponent";
 import BoxDefault from "../components/BoxDefault";
 import Table, { type FiltersColumn } from "../components/Tables";
-import { getRankingSchools, getRankingStudents } from "../api/api-ranking";
+import {  getRankingStudents } from "../api/api-ranking";
 import { defaultMode } from "../config/api-config";
 import { getRegioes } from "../api/api-regions";
 import { getGrupos } from "../api/api-groups";

@@ -2,11 +2,10 @@ import { useQueries } from "@tanstack/react-query";
 import Base from "../BaseComponent";
 import BoxDefault from "../components/BoxDefault";
 import Table, { type FiltersColumn } from "../components/Tables";
-import { getRankingRegions, getRankingSchools, getRankingStudents } from "../api/api-ranking";
+import { getRankingRegions, getRankingSchools } from "../api/api-ranking";
 import { defaultMode } from "../config/api-config";
 import { getRegioes } from "../api/api-regions";
 import { getGrupos } from "../api/api-groups";
-import Pizza from "../components/graficos/Pizza";
 import { BarChartCommon } from "../components/graficos/Bar";
 import { LayerLoad } from "./RankingDeALunos";
 export interface StudentData {

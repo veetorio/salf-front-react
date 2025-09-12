@@ -90,7 +90,7 @@ function Escolas() {
                     <div className="flex flex-col gap-2 mt-2">
                         <label>Região</label>
                         <Controller
-                            name="regionId"
+                            name="regioId"
                             control={control}
                             render={({ field }) => (
                                 <Dropdown

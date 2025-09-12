@@ -14,7 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import { FaTachometerAlt } from "react-icons/fa";
 import { MdCheck, MdGroups, MdPercent } from "react-icons/md";
 import Pizza from "../components/graficos/Pizza";
-import { getDashboardAnalytics, getPerformanceByGrade, getReadingLevelEvolution, getYearlyProgression, type DashboardAnalytics, type GradesPerformanceRoot } from "../api/api-dashboard";
+import { getDashboardAnalytics, getPerformanceByGrade, getReadingLevelEvolution, getYearlyProgression, type DashboardAnalytics, type GradePerformance, type GradesPerformanceRoot } from "../api/api-dashboard";
 import MultiLineChart, { LineGraph, type Evolution } from "../components/graficos/Linear";
 import  {YearlyBarChart, type YearlyProps } from "../components/graficos/Bar";
 export interface DashboardData {
@@ -57,7 +57,7 @@ function Dashboard() {
         readingLevelDistribution: []
     })
     const date = new Date()
-    const [levelProgress, setLevelProgress] = useState<GradesPerformanceRoot[]>()
+    const [levelProgress, setLevelProgress] = useState<GradePerformance[]>()
     const [yearly, setYearly] = useState<YearlyProps>({
         yearly: {
             currentYear: {
