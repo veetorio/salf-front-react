@@ -25,7 +25,7 @@ function Base(props: PropsWithChildren) {
                     {userLogin.name}
                 </div>
             </header>
-            <section className="p-2 w-full">
+            <section className="p-2 w-full bg-gray-1">
                 {props.children}
             </section>
         </section>
