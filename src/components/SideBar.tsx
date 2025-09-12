@@ -3,7 +3,7 @@ import { storeLogin, type LoginResponse } from "../contexts/login"
 import { LOCAL } from "../config/api-config"
 import { MdAssignmentTurnedIn, MdDashboard, MdEmojiEvents, MdGroups, MdHowToReg, MdLogout, MdPerson, MdSchool } from "react-icons/md";
 const rolesPanel = {
-    'ADMIN': ["Dashboard", "Escolas", "Turmas", "Alunos", "Avaliações", "Realizar", "Usuarios", "Ranking de Alunos", "Ranking de Escolas"],
+    'ADMIN': ["Dashboard", "Escolas", "Turmas", "Alunos", "Avaliações", "Realizar", "Usuarios", "Ranking-de-Alunos", "Ranking-de-Escolas"],
     'COORDINATOR': ["Escolas", "Turmas", "Alunos", "Avaliações", "Ranking de Alunos", "Ranking de Escolas"],
     'APPLICATOR': ["Realizar"],
     'MANAGER': ["Dashboard"]
@@ -16,8 +16,8 @@ const icons = {
     "Avaliações": <MdAssignmentTurnedIn />,
     "Usuarios": <MdPerson />,
     "Realizar": <MdHowToReg />,
-    "Ranking de Alunos": <MdEmojiEvents />,
-    "Ranking de Escolas": <MdSchool />,
+    "Ranking-de-Alunos": <MdEmojiEvents />,
+    "Ranking-de-Escolas": <MdSchool />,
     "sair" : <MdLogout/>
 };
 

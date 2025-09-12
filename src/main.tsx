@@ -17,6 +17,9 @@ import Escolas from './pages/Escolas.tsx'
 import Turmas from './pages/Turmas.tsx'
 import Alunos from './pages/Alunos.tsx'
 import Avaliacoes from './pages/Avaliacoes.tsx'
+import { reg } from './components/graficos/RegistrarGraficos.tsx'
+import RankingDeAlunos from './pages/RankingDeALunos.tsx'
+import RankingDeEscolas from './pages/RankingDeEscolas.tsx'
 const clientQuery = new QueryClient()
 const browser = createBrowserRouter([
   {
@@ -51,8 +54,17 @@ const browser = createBrowserRouter([
     path : "Avaliações",
     element : <Avaliacoes/>
   },
+  {
+    path : "ranking-de-alunos",
+    element : <RankingDeAlunos/>
+  },
+  {
+    path : "ranking-de-escolas",
+    element : <RankingDeEscolas/>
+  },
   
 ])
+reg()
 createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={clientQuery}>
       <ReactQueryDevtools initialIsOpen={false} />

@@ -393,6 +393,7 @@ function Avaliacoes() {
             setId(id)
             setEvent(response)
             setOpen(true)
+            setPost(false)
             reset(response)
         }
         const sendSubmitEvent = (data: { name: string }) => {
@@ -431,6 +432,7 @@ function Avaliacoes() {
                 <Button onClick={() => { 
                     setEvent(undefined)
                     reset({ name : ""})
+                    setPost(true)
                     setOpen(true) 
                 }}>
                     novo evento

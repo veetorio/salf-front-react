@@ -42,9 +42,20 @@ const translation: Record<string, string> = {
     "phrases": "frases",
     totalClasses: "total de turmas",
     status : "status",
+    "readingLevel" : "nivel de leitura",
+    "count" : "quantidade de leitores fluente"
     
 
 }
+ const niveisLeitores = {
+      NOT_EVALUATED: 'Não avaliado',
+      NON_READER: 'Não leitor',
+      SYLLABLE_READER: 'Leitor de sílabas',
+      WORD_READER: 'Leitor de palavras',
+      SENTENCE_READER: 'Leitor de frases',
+      TEXT_READER_WITHOUT_FLUENCY: 'Leitor de texto sem fluência',
+      TEXT_READER_WITH_FLUENCY: 'Leitor de texto com fluência'
+    }
 function Table<U extends object>(props: TableProps<U>) {
     const buttons = (row: RowData) => {
 
@@ -113,7 +124,7 @@ function Table<U extends object>(props: TableProps<U>) {
                     return <span className="bg-red-200 text-xs px-2 text-red-6 p-1 rounded-full">{value}</span>;
             }
         }
-        return <span>{value}</span>;
+        return <span>{niveisLeitores[value] ?? value}</span>;
     };
     const clear = () => {
         setFilter({})

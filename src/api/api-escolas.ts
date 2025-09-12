@@ -66,7 +66,23 @@ export const escolas = async () => {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
     }
-    const response = await axios.get(URL + "schools", {
+    const response = await axios.get(URL + "schools?limit=1000", {
+        headers: header
+    })
+
+    return mapData(response.data.data)
+}
+export const escolasById = async (idRegion : number,idGroup : number) => {
+    const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse).token;
+
+    if (!token) {
+        throw new Error("token expirado")
+    }
+    const header = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    }
+    const response = await axios.get(`${URL}schools?regionId=${idRegion}&groupId=${idGroup}&limit=1000`, {
         headers: header
     })
 

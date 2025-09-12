@@ -45,7 +45,7 @@ function Escolas() {
     }
 
 
-    const gruposGlobal = queries[1].data?.map(e => e.name)
+    const gruposGlobal = queries[0].data?.map(e => e.name)
     const regionsGlobal = queries[0].data?.map(e => e.name)
 
     const [open, setOpen] = useState(false)
@@ -151,7 +151,9 @@ function Escolas() {
             deleteCallbacks={onDelete}
             editCallbacks={onPutSchool}
             options={[regionsGlobal ?? [], gruposGlobal ?? []]}
-            title="Lista de Escolas" />
+            title="Lista de Escolas"
+
+        />
     </Base>
 
 }
