@@ -134,7 +134,6 @@ function Dashboard() {
     }, [])
     useEffect(() => {
         refetchAll()
-        console.log(levelProgress)
     }, [ids])
     const refetchAll = () => {
         queries.forEach(result => result.refetch());
