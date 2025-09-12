@@ -671,7 +671,7 @@ function Realizar() {
                             setIsDisabled(false)
                           }} onEnd={() => {
                             setIsDisabled(true)
-                          }} max={1 / 5} />
+                          }} max={item.nameStep === "texto" ? 1.5 : 1} />
                         </div>
                       </div>
                       <p>
