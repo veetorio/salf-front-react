@@ -6,7 +6,7 @@ export const Timer = (props: { max: number, onStart: () => void, onEnd: () => vo
     const [active, setActive] = useState<boolean>(false)
 
     useEffect(() => {
-        let contador: never
+        let contador: number
         if (active) {
             contador = setInterval(() => {
                 setTime((e) => {

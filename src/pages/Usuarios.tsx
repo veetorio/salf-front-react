@@ -19,7 +19,7 @@ export interface UserPost {
     name: string;
     email: string;
     role: string;
-    password: string
+    password?: string
 }
 export interface User extends UserPost {
     id: number;
@@ -37,7 +37,7 @@ function Usuarios() {
             queryKey: ["usuarios"],
             queryFn: async () => {
                 return toast.promise(
-                    getUsuarios,
+                    async () => await getUsuarios(),
                     {
                         success: "dados carregados",
                         pending: "carregando ...",
