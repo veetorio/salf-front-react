@@ -39,27 +39,27 @@ const browser = createBrowserRouter([
     element: <Escolas />
   },
   {
-    path : "Usuarios",
+    path : "/Usuarios",
     element : <Usuarios/>
   },
   {
-    path : "Turmas",
+    path : "/Turmas",
     element : <Turmas/>
   },
   {
-    path : "Alunos",
+    path : "/Alunos",
     element : <Alunos/>
   },
   {
-    path : "Avaliações",
+    path : "/Avaliações",
     element : <Avaliacoes/>
   },
   {
-    path : "ranking-de-alunos",
+    path : "/ranking-de-alunos",
     element : <RankingDeAlunos/>
   },
   {
-    path : "ranking-de-escolas",
+    path : "/ranking-de-escolas",
     element : <RankingDeEscolas/>
   },
   
