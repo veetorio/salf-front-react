@@ -12,6 +12,7 @@ import { escolas } from "../api/api-escolas";
 import { getTurmas } from "../api/api-turmas";
 import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
+import { LayerLoad } from "./RankingDeALunos";
 
 
 export interface Student {
@@ -150,7 +151,7 @@ function Alunos() {
             </div>
         </BoxDefault>
         {
-            isSuccess && <Table title="Alunos" filterInputs={filters} isAct rows={data ?? []} editCallbacks={onPutStudent} deleteCallbacks={deleteAluno}/>
+            isSuccess ? <Table title="Alunos" filterInputs={filters} isAct rows={data ?? []} editCallbacks={onPutStudent} deleteCallbacks={deleteAluno}/> : <LayerLoad/>
         }
     </Base>
 }

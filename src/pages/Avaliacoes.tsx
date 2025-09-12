@@ -17,6 +17,7 @@ import { MdAdd } from "react-icons/md";
 import { IoMdTrash } from "react-icons/io";
 import type AvaliacaoLeitura from "../api/api-avaliacoes";
 import {  useForm } from "react-hook-form";
+import { LayerLoad } from "./RankingDeALunos";
 
 
 function Avaliacoes() {
@@ -362,7 +363,7 @@ function Avaliacoes() {
                     nova avaliação
                 </Button>
             </BoxDefault>
-            {queries[1].isSuccess && <Table rows={queries[1].data ?? []} title="" deleteCallbacks={deleteAvaliacao} editCallbacks={updateAvaliacao} isAct />}
+            {queries[1].isSuccess ? <Table rows={queries[1].data ?? []} title="" deleteCallbacks={deleteAvaliacao} editCallbacks={updateAvaliacao} isAct /> : <LayerLoad/>}
         </>
     }
     const Eventos = () => {
@@ -438,7 +439,7 @@ function Avaliacoes() {
                     novo evento
                 </Button>
             </BoxDefault>
-            {queries[0].isSuccess && <Table rows={queries[0].data ?? []} title="" deleteCallbacks={mutDelete.mutateAsync} editCallbacks={onEdit} isAct />}
+            {queries[0].isSuccess ? <Table rows={queries[0].data ?? []} title="" deleteCallbacks={mutDelete.mutateAsync} editCallbacks={onEdit} isAct /> : <LayerLoad/>}
         </>
     }
     return <Base>

@@ -12,11 +12,12 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { LayerLoad } from "./RankingDeALunos";
 
 
 function Escolas() {
 
-    const { data } = useQuery<School[]>({
+    const { data, isSuccess } = useQuery<School[]>({
         queryKey: ["escolas"],
         queryFn: escolas,
         enabled: true
@@ -143,17 +144,20 @@ function Escolas() {
                 criar nova escola
             </Button>
         </BoxDefault>
-        <Table
-            isAct={true}
-            rows={data ?? Mockschools}
-            filterInputs={filters}
-            filterDrops={filterDrops}
-            deleteCallbacks={onDelete}
-            editCallbacks={onPutSchool}
-            options={[regionsGlobal ?? [], gruposGlobal ?? []]}
-            title="Lista de Escolas"
+        {
+            isSuccess ? <Table
+                isAct={true}
+                rows={data ?? Mockschools}
+                filterInputs={filters}
+                filterDrops={filterDrops}
+                deleteCallbacks={onDelete}
+                editCallbacks={onPutSchool}
+                options={[regionsGlobal ?? [], gruposGlobal ?? []]}
+                title="Lista de Escolas"
 
-        />
+            /> : <LayerLoad />
+        }
+
     </Base>
 
 }
