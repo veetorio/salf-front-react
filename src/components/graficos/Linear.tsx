@@ -83,7 +83,7 @@ export default function MultiLineChart(props: {
 export function LineGraph(props : { labels : string[], data : number[]}) {
     const options: ChartOptions<"line"> = {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
         plugins: {
             legend: {
                 display: false,

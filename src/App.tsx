@@ -40,9 +40,9 @@ function App() {
     
   }
   return (
-    <main className='bg-slate-1 flex items-center justify-center h-screen w-screen font-sans'>
+    <main className='bg-slate-1 p-8 flex items-center justify-center h-screen w-screen font-sans'>
 
-      <section className="bg-white w-1/3 shadow-md p-4 rounded-md" >
+      <section className="bg-white shadow-md p-4 rounded-md " >
         <h1 className="text-blue-7">SALF {LOCAL}</h1>
         <h3 className="text-slate-4">Sistema de Avaliação de Leitura e Fluência</h3>
         <form action="" className="h-full w-full py-5 flex flex-col gap-5" onSubmit={handleSubmit(sendData,() => {

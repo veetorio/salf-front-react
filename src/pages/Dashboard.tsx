@@ -16,7 +16,7 @@ import { MdCheck, MdGroups, MdPercent } from "react-icons/md";
 import Pizza from "../components/graficos/Pizza";
 import { getDashboardAnalytics, getPerformanceByGrade, getReadingLevelEvolution, getYearlyProgression, type DashboardAnalytics, type GradePerformance } from "../api/api-dashboard";
 import MultiLineChart, { LineGraph, type Evolution } from "../components/graficos/Linear";
-import  {YearlyBarChart, type YearlyProps } from "../components/graficos/Bar";
+import { YearlyBarChart, type YearlyProps } from "../components/graficos/Bar";
 export interface DashboardData {
     regionId: number,
     groupId: number,
@@ -169,7 +169,7 @@ function Dashboard() {
         </BoxDefault>
         <section>
             <header className="p-4 bg-white shadow-md rounded-lg mt-4">
-                <form action="" className="grid gap-x-2 gap-y-3 cols-3" onSubmit={handleSubmit(sendForm)}>
+                <form action="" className="grid cols-1 md:gap-x-2 md:gap-y-3 md:cols-3" onSubmit={handleSubmit(sendForm)}>
                     <div>
                         <label className="c-blue-950 font-bold">Regiões</label>
                         <Controller
@@ -276,15 +276,17 @@ function Dashboard() {
                             )}
                         />
                     </div>
-                    <Button>
-                        Enviar
-                    </Button>
+                    <div className="mt-4">
+                        <Button>
+                            Enviar
+                        </Button>
+                    </div>
                 </form>
             </header>
         </section>
         <main>
             {/* cards */}
-            <section className="flex gap-2 mt-4">
+            <section className="flex gap-2 mt-4 flex-wrap md:flex-nowrap ">
                 <Card icon={<MdGroups className="text-white opacity-80" size={24} />} text="Total de Alunos" color="bg-blue" value={cards.totalStudents} />
                 <Card icon={<MdCheck className="text-white opacity-80" size={24} />} text="Avaliações concluídas" color="bg-blue" value={cards.assessmentCompletion} />
                 <Card icon={<FaTachometerAlt className="text-white opacity-80" size={24} />} text="Alunos Avaliados" color="bg-green" value={cards.studentsAssessed} />
@@ -292,7 +294,7 @@ function Dashboard() {
                 <Card icon={<FaBookReader className="text-white opacity-80" size={24} />} text="PPM Médio" color="bg-blue" isPercent value={cards.averagePpm} />
                 <Card icon={<FaBrain className="text-white opacity-80" size={24} />} text="Compreensão" color="bg-purple" isPercent value={cards.comprehensionScore} />
             </section>
-            <section className="grid gap-4 cols-5 rows-2 mt-4">
+            <section className="grid cols-1 md:gap-4 md:cols-5 mt-4">
                 <section className="col-span-2 p-4 shadow-xl rounded-lg">
                     <Pizza title="Distribuição por Nível de Leitura" data={{ labels: PieLabels, values: PieData }} />
                 </section>
@@ -302,7 +304,7 @@ function Dashboard() {
                 <section className="col-span-3 p-4 shadow-xl  rounded-lg">
                     <MultiLineChart data={levelProgress ?? []} />
                 </section>
-                <section className="p-4 shadow-xl col-span-2 rounded-lg">
+                <section className="p-4 shadow-xl col-span-2 rounded-lg ">
                     <YearlyBarChart {...yearly} />
                 </section >
             </section>

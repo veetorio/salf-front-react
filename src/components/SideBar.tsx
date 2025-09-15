@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { storeLogin, type LoginResponse } from "../contexts/login"
 import { LOCAL } from "../config/api-config"
 import { MdAssignmentTurnedIn, MdDashboard, MdEmojiEvents, MdGroups, MdHowToReg, MdLogout, MdPerson, MdSchool } from "react-icons/md";
+import { Sidebar } from "primereact/sidebar";
 const rolesPanel = {
     'ADMIN': ["Dashboard", "Escolas", "Turmas", "Alunos", "Avaliações", "Realizar", "Usuarios", "Ranking-de-Alunos", "Ranking-de-Escolas"],
     'COORDINATOR': ["Escolas", "Turmas", "Alunos", "Avaliações", "Ranking de Alunos", "Ranking de Escolas"],
@@ -21,7 +22,7 @@ const icons = {
     "sair" : <MdLogout/>
 };
 
-function SideBar() {
+function SideBar(props : { onShow : () => void , show : boolean}) {
     const { user , clear } = storeLogin()
     const userLogin : LoginResponse = user ? user : JSON.parse((localStorage.getItem("user") || ""))
     const items: string[] = rolesPanel[userLogin.user.role] ?? []
@@ -32,11 +33,11 @@ function SideBar() {
         nav("/")
     }
     
-    return <aside className="h-screen w-1/5  bg-blue-950 px-4 py-5 font-sans c-white">
+    return <Sidebar visible={props.show} onHide={props.onShow} className="h-screen bg-blue-950 px-4 py-5 font-sans c-white">
         <header>
-            <h1>
+            <h3>
                 Salf {LOCAL}
-            </h1>
+            </h3>
         </header>
         <nav className="flex flex-col gap-4 mt-5">
             {
@@ -44,7 +45,7 @@ function SideBar() {
             }
             <div onClick={logout} className="flex gap-4 items-center hover:c-gray">{icons["sair"]}sair</div>
         </nav>
-    </aside>
+    </Sidebar>
 
 }
 export default SideBar
