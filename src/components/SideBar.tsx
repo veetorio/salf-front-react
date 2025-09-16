@@ -35,9 +35,9 @@ function SideBar(props : { onShow : () => void , show : boolean}) {
     
     return <Sidebar visible={props.show} onHide={props.onShow} className="h-screen bg-blue-950 px-4 py-5 font-sans c-white">
         <header>
-            <h3>
+            <h2>
                 Salf {LOCAL}
-            </h3>
+            </h2>
         </header>
         <nav className="flex flex-col gap-4 mt-5">
             {

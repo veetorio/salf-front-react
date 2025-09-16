@@ -569,17 +569,18 @@ function Realizar() {
           >
             <h1 className="c-blue-950 text-xl">Selecione avaliação</h1>
             <form
-              className="grid grid-cols-3 gap-x-2 gap-y-4 mt-4"
+              className="flex gap-x-4 flex-wrap mt-4"
               onSubmit={async (e) => {
                 e.preventDefault();
                 const response = await mut.mutateAsync();
-                setStudent({ 
-                   name : response.student.name,
-                   classGroup : response.student.classGroup.name,
-                   grade : response.student.classGroup.grade,
-                   id : response.student.id,
-                  school : response.student.school.name,
-                 })
+                console.log(response)
+                setStudent({
+                  name: response.student.name,
+                  classGroup: "",
+                  grade:"",
+                  id: response.student.id,
+                  school: "",
+                })
                 mutRealizar.mutate(response.assessment.id);
 
               }}
@@ -645,7 +646,9 @@ function Realizar() {
                   }
                 />
               </div>
-              <Button>iniciar avaliação</Button>
+              <div className="mt-4">
+                <Button>iniciar avaliação</Button>
+              </div>
             </form>
           </section>
         )}
