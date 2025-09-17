@@ -3,6 +3,7 @@ import type { LoginResponse } from "../contexts/login";
 import { URL } from "../config/api-config";
 import { toast } from "react-toastify";
 import type { DashboardData } from "../pages/Dashboard";
+import type { StudentsRanking } from "./api-alunos";
 
 const getHeaders = () => {
   const token = (JSON.parse(localStorage.getItem("user") ?? "") as LoginResponse)?.token;
@@ -53,7 +54,7 @@ const fetchWithToastNoData = async <T>(
 };
 
 export const getRankingStudents = (params?: DashboardData) =>
-  fetchWithToast<StudentData[]>("student-ranking", {
+  fetchWithToast<StudentsRanking[]>("student-ranking", {
     success: "Dados analíticos carregados",
     error: "Não foi possível carregar os dados analíticos",
     pending: "Carregando dados analíticos...",

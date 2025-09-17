@@ -12,6 +12,13 @@ interface Students {
     classGroup: string,
     school : string
 }
+export interface StudentsRanking {
+    id: number,
+    student: string,
+    grade: string,
+    readingLevel : string,
+    school : string
+}
 
 export interface StudentResponse{
   id: number;

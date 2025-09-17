@@ -54,11 +54,11 @@ const browser = createBrowserRouter([
     element : <Avaliacoes/>
   },
   {
-    path : "/ranking-de-alunos",
+    path : "/ranking de alunos",
     element : <RankingDeAlunos/>
   },
   {
-    path : "/ranking-de-escolas",
+    path : "/ranking de escolas",
     element : <RankingDeEscolas/>
   },
   

@@ -2,7 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import Base from "../BaseComponent";
 import BoxDefault from "../components/BoxDefault";
 import Table, { type FiltersColumn } from "../components/Tables";
-import {  getRankingStudents } from "../api/api-ranking";
+import { getRankingStudents } from "../api/api-ranking";
 import { defaultMode } from "../config/api-config";
 import { getRegioes } from "../api/api-regions";
 import { getGrupos } from "../api/api-groups";
@@ -31,7 +31,7 @@ function RankingDeAlunos() {
     const queries = useQueries({
         queries: [
             {
-                queryFn: async () =>  getRankingStudents() ,
+                queryFn: async () => getRankingStudents(),
                 queryKey: ["ranking"]
             },
             {
@@ -45,29 +45,50 @@ function RankingDeAlunos() {
         ]
     })
     const filterDrops: FiltersColumn = {
-        "region": { ...defaultMode },
-        "group": { ...defaultMode },
+        "grade": { ...defaultMode },
+        "readingLevel": { ...defaultMode },
     }
-    const filterInput: FiltersColumn = {
-        "school": { ...defaultMode },
-    }
-    const [ranking, groups, regions] = queries
-    const regionsMap = regions.data?.map(e => e.name)
-    const groupsMap = groups.data?.map(e => e.name)
-    const rows = ranking.data?.map(e => ({ name: e.student, school: e.school, region: e.region, group: e.group, readingLevel: e.readingLevel }))
 
+    const [ranking] = queries
+    const rows = ranking.data?.map(e => ({ name: e.student, school: e.school, grade: (removerGrau(e.grade)), readingLevel: e.readingLevel }))
+    function removerGrau(texto: string): string {
+        if (!texto)
+            return texto
+        return texto.replace(/[°º]/g, "");
+    }
+    const levels = [
+        "NOT_EVALUATED",
+        "NON_READER",
+        "SYLLABLE_READER",
+        "WORD_READER",
+        "SENTENCE_READER",
+        "TEXT_READER_WITHOUT_FLUENCY",
+        "TEXT_READER_WITH_FLUENCY"
+    ]
+    const niveisLeitores = {
+        NOT_EVALUATED: 'Não avaliado',
+        NON_READER: 'Não leitor',
+        SYLLABLE_READER: 'Leitor de sílabas',
+        WORD_READER: 'Leitor de palavras',
+        SENTENCE_READER: 'Leitor de frases',
+        TEXT_READER_WITHOUT_FLUENCY: 'Leitor de texto sem fluência',
+        TEXT_READER_WITH_FLUENCY: 'Leitor de texto com fluência'
+    }
+    const optSeries = ["1 ANO", "2 ANO", "3 ANO", "4 ANO", "5 ANO", "6 ANO", "7 ANO", "8 ANO", "9 ANO"]
+
+    const inputValues: { label: string, value: string }[] = levels.map(e => ({ label: niveisLeitores[e], value: e }))
     return <Base>
         <BoxDefault title="Ranking de alunos" />
         {
             ranking.isSuccess ? <Table
                 title="Alunos"
-                options={[regionsMap ?? [], groupsMap ?? []]}
+                options={[optSeries, inputValues]}
                 filterDrops={filterDrops}
-                filterInputs={filterInput}
+                // filterInputs={filterInput}
                 rows={rows ?? []}
                 editCallbacks={() => { }}
                 deleteCallbacks={() => { }}
-            /> : <LayerLoad/>
+            /> : <LayerLoad />
         }
 
     </Base>
